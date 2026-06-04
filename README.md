@@ -1,73 +1,98 @@
-# React + TypeScript + Vite
+# ProffieAI — Proffie Config Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based configuration tool for [ProffieOS](https://github.com/profezzorn/ProffieOS) lightsaber boards. Build, preview, and download your `config.h` file without writing a line of C++.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Hardware Configuration
+- Board selection: ProffieBoard V1, V2.2, V3.9, Lite
+- Blade count and type per blade (WS2811, APA102, Simple LED, NeoPixel)
+- Button count (1, 2, or 3)
+- Volume, brightness, and feature flags (Audio, Motion, SD, OLED, Bluetooth, Serial, Battery announce)
 
-## React Compiler
+### Font Presets
+Each font preset is one entry in the generated `presets[]` array — a blade style paired with a sound folder.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Add as many font presets as you need
+- Drag to reorder (order matches the config)
+- Preset Library with ready-to-use styles:
+  - **Fett263 OS8** — Ninth Jedi, Fallen Order, Static, Kylo Ren, Unstable Blades (full `StylePtr<Layers<...>>` strings)
+  - **Classic** — StyleNormal, StyleFire, StyleRainbow, StyleStrobe, AudioFlicker, Gradient, Pulsing
 
-## Expanding the ESLint configuration
+### Blade Style Builder
+- **Visual mode** — color pickers, effect selector, clash/swing settings, brightness slider
+- **Raw mode** — direct Proffie style string editor with live preview
+- Effects: Solid, Unstable/Voltage Flicker, Fire, Shimmer, Gradient, Rainbow, Strobe
+- Clash effects: Color Flash, Flare Burst, Spark Spray
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Animated Blade Preview
+Live canvas preview updates as you edit — rendered per-effect:
+- Solid glow, unstable per-pixel flicker, fire gradient, shimmer wave, two-color gradient, hue-rotating rainbow, strobe flash
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Sound Font Scanner
+- Folder picker via the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) (Chrome/Edge)
+- Auto-detects ProffieOS slot names: `hum`, `out`, `in`, `clash`, `swing`, `blst`, `drag`, `force`, `preon`, and more
+- Handles numbered variants (`clash1.wav`, `clash2.wav`)
+- Warns on missing required slots, resolves ambiguous matches
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Config Preview & Export
+- Live syntax-highlighted `config.h` output (updates as you edit)
+- Copy to clipboard or download as `config.h`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Save / Load Projects
+- Save your full setup as a `.proffieai` file (plain JSON)
+- Load it back in any browser session
+- State also auto-persists to `localStorage`
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open `http://localhost:5173` in Chrome or Edge.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+> **Note:** The sound font folder picker requires Chrome or Edge (File System Access API). All other features work in any modern browser.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Build
+
+```bash
+npm run build
 ```
+
+Output goes to `dist/` — a static site that can be hosted anywhere.
+
+## Stack
+
+- [React](https://react.dev) + [TypeScript](https://www.typescriptlang.org)
+- [Vite](https://vite.dev)
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [highlight.js](https://highlightjs.org) — config syntax highlighting
+- [nanoid](https://github.com/ai/nanoid) — unique preset IDs
+- HTML5 Canvas — animated blade preview
+- HTML5 Drag and Drop — font reordering
+- File System Access API — sound folder scanning
+
+## Project Structure
+
+```
+src/
+  components/
+    HardwareConfig/       Board, blade, button and feature settings
+    BladeStyleBuilder/    Visual editor + raw style editor + canvas preview
+    FontPresetsManager/   Multi-font list with preset library
+    ConfigPreview/        Syntax-highlighted output + download
+  lib/proffie/
+    boardProfiles.ts      Hardware specs per board version
+    styleTemplates.ts     Beginner settings → Proffie style strings
+    soundFontParser.ts    Folder scanner and slot mapper
+    configGenerator.ts    Assembles the final config.h
+    presetLibrary.ts      Built-in preset styles
+  types/
+    config.ts             Shared data model
+```
+
+## ProffieOS Compatibility
+
+Generated configs target **ProffieOS 7/8** with `proffieboard_v3_config.h`. Style strings from the preset library are sourced from [Fett263's style library](https://www.fett263.com/fett263-proffieOS7-style-library.html).
