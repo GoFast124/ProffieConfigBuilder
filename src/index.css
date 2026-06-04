@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  --saber-blue: #4fc3f7;
+  --saber-red: #ef5350;
+  --saber-green: #66bb6a;
+  --saber-purple: #ce93d8;
+  --saber-glow: 0 0 12px rgba(79, 195, 247, 0.6), 0 0 24px rgba(79, 195, 247, 0.3);
+}
+
+body {
+  margin: 0;
+  background: #0a0b0f;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Syntax highlight overrides for dark theme */
+.hljs {
+  background: transparent !important;
+  color: #a8b4c8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.hljs-keyword { color: #c792ea; }
+.hljs-string { color: #c3e88d; }
+.hljs-comment { color: #546e7a; font-style: italic; }
+.hljs-number { color: #f78c6c; }
+.hljs-meta { color: #89ddff; }
+.hljs-title { color: #82aaff; }
+.hljs-type { color: #ffcb6b; }
